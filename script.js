@@ -129,6 +129,17 @@ function createCityBtns(searchedCities) {
     }
 }
 
+function removeDuplicateCities(searchedCities) {
+
+    var jsonCities = searchedCities.map(JSON.stringify);
+
+    var nonDuplicateCitiesSet = new Set(jsonCities);
+    
+    var nonDuplicateCitiesArray = Array.from(nonDuplicateCitiesSet).map(JSON.parse);
+    
+    return nonDuplicateCitiesArray;
+}
+
 
 
 searchBtn.on('click', function(event){
@@ -146,13 +157,16 @@ searchBtn.on('click', function(event){
     state = stateInput.val().trim();
     state = state.replace(' ', '%20');
 
+
+    
     zipcode = zipcodeInput.val().trim();
+    zipcode = parseInt(zipcode);
 
 
     clearInputFields();
 
 
-    if (zipcode !== '') {
+    if (zipcode !== '' && isNaN(zipcode) === false) {
         mapquestURL = 'http://www.mapquestapi.com/geocoding/v1/address?key=' + mapquestKey + '&postalCode=' + zipcode;
     } else if (city !== '') {
         mapquestURL = 'http://www.mapquestapi.com/geocoding/v1/address?key=' + mapquestKey + '&city=' + city + '&state=' + state;
@@ -188,6 +202,8 @@ searchBtn.on('click', function(event){
                 searchedCities.push(searchObject);
             }
 
+            
+            searchedCities = removeDuplicateCities(searchedCities);
             console.log('searchedCities: ', searchedCities);
             localStorage.setItem('localStorageSearchedCities', JSON.stringify(searchedCities));
             createCityBtns(searchedCities);
