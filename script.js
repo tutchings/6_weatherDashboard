@@ -118,11 +118,12 @@ function createCityBtns(searchedCities) {
         
         searchedCity = searchedCities[i].city;
         searchedState = searchedCities[i].state;
+        searchedCountry = searchedCities[i].country;
 
         if (searchedCities[i].country === 'US'){
             searchedCityState = searchedCity + ', ' + searchedState;
         } else {
-            searchedCityState = searchedCity;
+            searchedCityState = searchedCity + ', ' + searchedCountry;
         }
 
         $('.cityBtns').append('<button type="button" class="btn btn-light btn-block cityBtn" data-city="' + searchedCity + '" data-state="' + searchedState + '">' + searchedCityState + '</button>');
@@ -197,7 +198,7 @@ searchBtn.on('click', function(event){
                 searchObject = {city: city, state: state, country: country};
                 searchedCities.push(searchObject);
             } else {
-                cityState = city;
+                cityState = city + ', ' + country;
                 searchObject = {city: city, state: '', country: country};
                 searchedCities.push(searchObject);
             }
@@ -241,5 +242,61 @@ searchBtn.on('click', function(event){
     }
 
 
+});
+
+$('body').delegate('.cityBtn', 'click', function(event) {
+    event.preventDefault();
+
+    resetData();
+
+    city = this.dataset.city;
+    city = city.replace(' ', '%20');
+    
+    state = this.dataset.state;
+
+    mapquestURL = 'http://www.mapquestapi.com/geocoding/v1/address?key=' + mapquestKey + '&city=' + city + '&state=' + state;
+
+    $.ajax({
+        url: mapquestURL,
+        method: "GET"
+    }).then(function(response) {
+        lat = response.results[0].locations[0].latLng.lat;
+        lng = response.results[0].locations[0].latLng.lng;
+        city = response.results[0].locations[0].adminArea5;
+        state = response.results[0].locations[0].adminArea3;
+        country = response.results[0].locations[0].adminArea1;
+
+        if (country === 'US') {
+            cityState = city + ', ' + state;
+        } else {
+            cityState = city + ', ' + country; 
+        }
+
+        weatherURL = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lng + '&units=imperial&exclude=minutely,hourly,alerts&appid=' + weatherKey; 
+
+        $.ajax({
+            url: weatherURL,
+            method: "GET"
+        }).then(function(response) {
+            
+            
+            
+            var currentWeather = response.current;
+            
+            displayCurrentWeather(currentWeather);
+
+            var forecast = response.daily;
+            
+
+            forecast.splice(0, 1);
+            console.log('forecast:', forecast);
+            displayForecast(forecast);
+
+            
+            
+        }); //end weather api call
+
+    }); //end mapquest api call
+        
 });
 
