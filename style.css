@@ -32,3 +32,35 @@ h1 {
 #currentUVIndex {
     border-radius: 9px;
 }
+
+.card {
+    background-color: blue;
+    color: white;
+    
+}
+
+.weatherIcon{
+    height: 100px;
+    width: 100px;
+    margin-bottom: 10px;
+}
+
+.row {
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+#currentIcon {
+    height: 25px;
+    width: 25px;
+}
+
+.cityBtns {
+    margin-top: 14px;
+    margin-bottom: 10px;
+    /* border: 2px solid black; */
+    height: 250px;
+    overflow: scroll;
+    overflow-x: hidden;
+    padding: 5px;
+}
