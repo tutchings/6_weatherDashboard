@@ -185,6 +185,31 @@ function removeDuplicateCities(searchedCities) {
 }//end function removeDuplicateCities
 
 
+//function to call the openweather api
+function callOpenWeatherApi(weatherURL){
+
+    $.ajax({
+        url: weatherURL,
+        method: "GET"
+    }).then(function(response) {
+
+        console.log('response:', response)
+        
+        //creates array that stores current weather response from openweather api and passes to displayCurrentWeather function
+        var currentWeather = response.current;
+        displayCurrentWeather(currentWeather);
+
+        //creates array that stores the weather forecast response from openweather api and passes to displayForecast function
+        //removes first index in forecast array (first index is current day)
+        var forecast = response.daily;
+        forecast.splice(0, 1);
+        displayForecast(forecast);
+        
+    }); //end ajax call to openweather api
+
+}//end function callOpenWeatherApi
+
+
 
 //on click event for search button
 searchBtn.on('click', function(event){
@@ -214,7 +239,6 @@ searchBtn.on('click', function(event){
         mapquestURL = 'https://www.mapquestapi.com/geocoding/v1/address?key=' + mapquestKey + '&postalCode=' + zipcode;
     } else if (city !== '') {
         mapquestURL = 'https://www.mapquestapi.com/geocoding/v1/address?key=' + mapquestKey + '&city=' + city + '&state=' + state;
-        console.log('mapquestURL:', mapquestURL)
     } else {
         $('#errorMessage').css('display', 'block');
         console.log('url', mapquestURL);
@@ -265,24 +289,9 @@ searchBtn.on('click', function(event){
             if (lat !== '' && lng !== '') {
                 weatherURL = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lng + '&units=imperial&exclude=minutely,hourly,alerts&appid=' + weatherKey; 
         
-                $.ajax({
-                    url: weatherURL,
-                    method: "GET"
-                }).then(function(response) {
-                    
-                    //creates array that stores current weather response from openweather api and passes to displayCurrentWeather function
-                    var currentWeather = response.current;
-                    displayCurrentWeather(currentWeather);
+                //passes weatherURL to callOpenWeatherApi function
+                callOpenWeatherApi(weatherURL);
 
-                    //creates array that stores the weather forecast response from openweather api and passes to displayForecast function
-                    //removes first index in forecast array (first index is current day)
-                    var forecast = response.daily;
-                    forecast.splice(0, 1);
-                    displayForecast(forecast);
-
-                    
-                    
-                }); //end ajax call to openweather api
             }//end inner if statement
         });//end ajax call to mapquest url
     }//end outer if statement
@@ -327,26 +336,27 @@ $('body').delegate('.cityBtn', 'click', function(event) {
         //passees lat and lng coordinates from mapquest api to openweather url
         weatherURL = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lng + '&units=imperial&exclude=minutely,hourly,alerts&appid=' + weatherKey; 
 
-        $.ajax({
-            url: weatherURL,
-            method: "GET"
-        }).then(function(response) {
-            
-            
-            //creates array that stores current weather response from openweather api and passes to displayCurrentWeather function
-            var currentWeather = response.current;
-            displayCurrentWeather(currentWeather);
-
-            //creates array that stores the weather forecast response from openweather api and passes to displayForecast function
-            //removes first index in forecast array (first index is current day)
-            var forecast = response.daily;
-            forecast.splice(0, 1);
-            displayForecast(forecast);
-
-            
-        }); //end openweather api call
+        //passes weatherURL to callOpenWeatherApi function
+        callOpenWeatherApi(weatherURL);
 
     }); //end mapquest api call
         
 });//end city btn on click event
+
+
+
+//click event for clearCities button
+$('#clearCities').on('click', function(event){
+    event.preventDefault();
+
+    //clears searchedCities array
+    searchedCities = [];
+
+    //clears local storage by passing empty array to local storage
+    localStorage.setItem('localStorageSearchedCities', JSON.stringify(searchedCities));
+
+    //clears city buttons by passing empty array to createCityBtns function
+    createCityBtns(searchedCities);
+
+}); //end clearCities on click 
 
