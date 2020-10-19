@@ -3,6 +3,7 @@ var city = '';
 var state = '';
 var zipcode = '';
 var cityState;
+var lastSearchedCity = {lat: '', lng: '', cityState: ''};
 var lat = '';
 var lng = '';
 var searchedCities = [];
@@ -23,10 +24,34 @@ if ((localStorage.getItem('localStorageSearchedCities')) !== null) {
     searchedCities = JSON.parse(localStorage.getItem('localStorageSearchedCities'));
 }
 
-
+initializeDashboard();
 
 //display button for each city stored in local storage on page load
 createCityBtns(searchedCities);
+
+
+
+//function to initialize dashboard with data from last searched city
+function initializeDashboard(){
+    
+    if ((localStorage.getItem('localStorageLastSearchedCity')) !== '{"lat":"","lng":"","cityState":""}' && (localStorage.getItem('localStorageLastSearchedCity')) !== null) {
+
+        lastSearchedCity = JSON.parse(localStorage.getItem('localStorageLastSearchedCity'));
+        
+        //set lat, lng, and cityState equal to lastSearchedCity information stored in local storage
+        lat = lastSearchedCity.lat;
+        lng = lastSearchedCity.lng;
+        cityState = lastSearchedCity.cityState;
+
+        //passes lat, lng, and weatherKey to openweather url
+        weatherURL = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lng + '&units=imperial&exclude=minutely,hourly,alerts&appid=' + weatherKey;
+
+        //passes weatherURL to callOpenWeatherApi function
+        callOpenWeatherApi(weatherURL);
+
+    }
+
+}//end function initializeDashboard
 
 
 
@@ -47,13 +72,23 @@ function returnTime(unixTime) {
 //function to display current weather on the dashboard
 function displayCurrentWeather(currentWeather) {
 
+    console.log('currentWeather: ', currentWeather);
+
+    //variable declarations
+    var icon;
+    var iconSrc;
+
     //calls returnTime function to convert unix time to mm/dd/yyyy format for display on dashboard
     var time = returnTime(currentWeather.dt);
 
-    //displays city, date, and weather icon to first line of dashboard
+    //displays city and date to first line of dashboard
     $('#city').text(cityState);
     $('#city').append(' ' + '(' + time + ')');
-    $('#city').append('<span><img src="sun.jpg" alt="sun" id="currentIcon"></span>');
+
+    //appends weather icon to first line of dashboard
+    icon = currentWeather.weather[0].icon;
+    iconSrc = 'https://openweathermap.org/img/wn/' + icon + '@2x.png';
+    $('#city').append('<span><img src="' + iconSrc + '" alt="sun" id="currentIcon"></span>');
 
     //displays current temp, humidity, wind speed, and uvi to dashboard
     $('#currentTemp').append(currentWeather.temp + ' &#8457;');
@@ -86,6 +121,14 @@ function displayCurrentWeather(currentWeather) {
 function displayForecast(forecast){
     var day;
     var dayId;
+    var icon;
+    var iconId;
+    var iconSrc;
+    var high;
+    var highId;
+    var low;
+    var lowId;
+
 
     //loop to diaplay date, weather icon, high, and low temp in cards for 5 day forecast
     for(var i = 0; i < 5; i++){
@@ -93,6 +136,11 @@ function displayForecast(forecast){
         day = returnTime(forecast[i].dt);
         dayId = '#day' + i;
         $(dayId).text(day);
+
+        icon = forecast[i].weather[0].icon;
+        iconSrc = 'https://openweathermap.org/img/wn/' + icon + '@2x.png';
+        iconId = '#weatherIcon' + i;
+        $(iconId).attr('src', iconSrc);
 
         high = 'High: ' + forecast[i].temp.max;
         highId = '#high' + i;
@@ -105,6 +153,9 @@ function displayForecast(forecast){
         $(lowId).append(' &#8457;');
 
     }//end for loop
+
+    //display weather
+    $('.cityWeather').css('visibility', 'visible');
 
 } //end function displayForecast
 
@@ -119,9 +170,10 @@ function resetData() {
     $('#currentTemp').empty();
     $('#currentHumidity').empty();
     $('#currentWindSpeed').empty();
-    $('#currentUVIndex').empty();
-    $('#currentUVIndex').css('background-color', 'transparent');
-    $('#currentUVIndex').css('color', 'black');
+    uvi.empty();
+    uvi.css('background-color', 'transparent');
+    uvi.css('color', 'black');
+    
 } //end resetData
 
 
@@ -261,16 +313,22 @@ searchBtn.on('click', function(event){
             state = response.results[0].locations[0].adminArea3;
             country = response.results[0].locations[0].adminArea1;
 
+            //sets last searched lat and lng variables
+            lastSearchedCity.lat = lat;
+            lastSearchedCity.lng = lng;
+
             var searchObject = {}
 
             //if the location is in the US, set cityState to city, state and create object with city, state, and country
             //if the location is international, set cityState to city, country and create an object with the city and country but a blank state
             if (country === 'US') {
                 cityState = city + ', ' + state;
+                lastSearchedCity.cityState = city + ', ' + state;
                 searchObject = {city: city, state: state, country: country};
                 searchedCities.push(searchObject);
             } else {
                 cityState = city + ', ' + country;
+                lastSearchedCity.cityState = city + ', ' + country;
                 searchObject = {city: city, state: '', country: country};
                 searchedCities.push(searchObject);
             }
@@ -280,6 +338,7 @@ searchBtn.on('click', function(event){
 
             //stores searchedCities in local storage
             localStorage.setItem('localStorageSearchedCities', JSON.stringify(searchedCities));
+            localStorage.setItem('localStorageLastSearchedCity', JSON.stringify(lastSearchedCity));
 
             //creates buttons for each searchedCity
             createCityBtns(searchedCities);
@@ -325,13 +384,23 @@ $('body').delegate('.cityBtn', 'click', function(event) {
         state = response.results[0].locations[0].adminArea3;
         country = response.results[0].locations[0].adminArea1;
 
+        //sets last searched lat and lng variables
+        lastSearchedCity.lat = lat;
+        lastSearchedCity.lng = lng;
+
         //if location is in US, set cityState to city, state
         //if location is international, set cityState to city, country
         if (country === 'US') {
             cityState = city + ', ' + state;
+            lastSearchedCity.cityState = city + ', ' + state;
+            
         } else {
             cityState = city + ', ' + country; 
+            lastSearchedCity.cityState = city + ', ' + country;
         }
+
+        //passes last searched city to local storage
+        localStorage.setItem('localStorageLastSearchedCity', JSON.stringify(lastSearchedCity));
 
         //passees lat and lng coordinates from mapquest api to openweather url
         weatherURL = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lng + '&units=imperial&exclude=minutely,hourly,alerts&appid=' + weatherKey; 
@@ -349,11 +418,13 @@ $('body').delegate('.cityBtn', 'click', function(event) {
 $('#clearCities').on('click', function(event){
     event.preventDefault();
 
-    //clears searchedCities array
+    //clears searchedCities array and lastSearchedcity object
     searchedCities = [];
+    lastSearchedCity = {lat: '', lng: '', cityState: ''};
 
     //clears local storage by passing empty array to local storage
     localStorage.setItem('localStorageSearchedCities', JSON.stringify(searchedCities));
+    localStorage.setItem('localStorageLastSearchedCity', JSON.stringify(lastSearchedCity));
 
     //clears city buttons by passing empty array to createCityBtns function
     createCityBtns(searchedCities);
