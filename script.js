@@ -168,9 +168,9 @@ searchBtn.on('click', function(event){
 
 
     if (zipcode !== '' && isNaN(zipcode) === false) {
-        mapquestURL = 'http://www.mapquestapi.com/geocoding/v1/address?key=' + mapquestKey + '&postalCode=' + zipcode;
+        mapquestURL = 'https://www.mapquestapi.com/geocoding/v1/address?key=' + mapquestKey + '&postalCode=' + zipcode;
     } else if (city !== '') {
-        mapquestURL = 'http://www.mapquestapi.com/geocoding/v1/address?key=' + mapquestKey + '&city=' + city + '&state=' + state;
+        mapquestURL = 'https://www.mapquestapi.com/geocoding/v1/address?key=' + mapquestKey + '&city=' + city + '&state=' + state;
         console.log('mapquestURL:', mapquestURL)
     } else {
         $('#errorMessage').css('display', 'block');
@@ -254,7 +254,7 @@ $('body').delegate('.cityBtn', 'click', function(event) {
     
     state = this.dataset.state;
 
-    mapquestURL = 'http://www.mapquestapi.com/geocoding/v1/address?key=' + mapquestKey + '&city=' + city + '&state=' + state;
+    mapquestURL = 'https://www.mapquestapi.com/geocoding/v1/address?key=' + mapquestKey + '&city=' + city + '&state=' + state;
 
     $.ajax({
         url: mapquestURL,
