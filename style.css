@@ -1,12 +1,30 @@
+/* element selectors */
+h1 {
+    color: white;
+}
+
+/* id selectors */
+#errorMessage {
+    color: firebrick;
+    display: none;
+}
+
+#currentUVIndex {
+    border-radius: 9px;
+}
+
+#currentIcon {
+    height: 25px;
+    width: 25px;
+}
+
+/* class selectors */
+
 .heading {
     height: 75px;
     padding: 0;
     background-color: black;
     text-align: center;
-}
-
-h1 {
-    color: white;
 }
 
 .cityList {
@@ -20,23 +38,13 @@ h1 {
     padding-left: 5px;
 }
 
-#errorMessage {
-    color: firebrick;
-    display: none;
-}
-
 .dataDisplay {
     padding: 5px;
-}
-
-#currentUVIndex {
-    border-radius: 9px;
 }
 
 .card {
     background-color: blue;
     color: white;
-    
 }
 
 .weatherIcon{
@@ -48,11 +56,6 @@ h1 {
 .row {
     margin-right: 5px;
     margin-left: 5px;
-}
-
-#currentIcon {
-    height: 25px;
-    width: 25px;
 }
 
 .cityBtns {
