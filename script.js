@@ -293,6 +293,7 @@ searchBtn.on('click', function(event){
         mapquestURL = 'https://www.mapquestapi.com/geocoding/v1/address?key=' + mapquestKey + '&city=' + city + '&state=' + state;
     } else {
         $('#errorMessage').css('display', 'block');
+        $('.cityWeather').css('visibility', 'hidden');
         console.log('url', mapquestURL);
     }
 
