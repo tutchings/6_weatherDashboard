@@ -4,6 +4,11 @@ Developers are often tasked with retrieving data from another application's API 
 
 Use the [OpenWeather API](https://openweathermap.org/api) to retrieve weather data for cities. The documentation includes a section called "How to start" that will provide basic setup and usage instructions. Use `localStorage` to store any persistent data.
 
+## Link to Live Project and Project Image
+![Screenshot of Final Project](https://github.com/tutchings/5_dayPlanner/blob/master/completedProjectImage.PNG)
+
+[Deployed Website Link](https://tutchings.github.io/6_weatherDashboard/)
+
 ## User Story
 
 ```
@@ -30,9 +35,6 @@ WHEN I open the weather dashboard
 THEN I am presented with the last searched city forecast
 ```
 
-The following image demonstrates the application functionality:
-
-![weather dashboard demo](./Assets/06-server-side-apis-homework-demo.png)
 
 ## Review
 
