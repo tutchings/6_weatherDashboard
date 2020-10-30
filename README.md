@@ -9,6 +9,19 @@ Use the [OpenWeather API](https://openweathermap.org/api) to retrieve weather da
 
 [Deployed Website Link](https://tutchings.github.io/6_weatherDashboard/)
 
+## Languages/Frameworks
+
+* HTML
+* CSS
+* Bootstrap
+* JavaScript
+* jQuery
+
+## APIs
+
+* OpenWeather API
+* MapQuest API
+
 ## User Story
 
 ```
